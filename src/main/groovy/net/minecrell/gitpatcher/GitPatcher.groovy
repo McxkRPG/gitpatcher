@@ -33,14 +33,14 @@ import org.gradle.api.Project
 class GitPatcher implements Plugin<Project> {
 
     protected Project project
-    protected PatchExtension extension
+    protected PatchExtension patchExtension
 
     @Override
     void apply(Project project) {
         this.project = project
         project.with {
-            this.extension = extensions.create('patches', PatchExtension)
-            extension.root = projectDir
+            this.patchExtension = extensions.create('patches', PatchExtension)
+            patchExtension.root = projectDir
 
             task('findGit', type: FindGitTask)
             task('updateSubmodules', type: UpdateSubmodulesTask, dependsOn: 'findGit')
@@ -49,20 +49,20 @@ class GitPatcher implements Plugin<Project> {
 
             afterEvaluate {
                 // Configure the settings from our extension
-                tasks.findGit.submodule = extension.submodule
+                tasks.findGit.submodule = patchExtension.submodule
 
                 configure([tasks.applyPatches, tasks.makePatches]) {
-                    repo = extension.target
-                    root = extension.root
-                    submodule = extension.submodule
-                    patchDir = extension.patches
+                    repo = patchExtension.target
+                    root = patchExtension.root
+                    submodule = patchExtension.submodule
+                    patchDir = patchExtension.patches
                 }
 
                 tasks.applyPatches.updateTask = tasks.updateSubmodules
 
                 tasks.updateSubmodules.with {
-                    repo = extension.root
-                    submodule = extension.submodule
+                    repo = patchExtension.root
+                    submodule = patchExtension.submodule
                 }
             }
         }
@@ -74,8 +74,8 @@ class GitPatcher implements Plugin<Project> {
     }
 
     @CompileStatic
-    PatchExtension getExtension() {
-        return extension
+    PatchExtension getPatchExtension() {
+        return patchExtension
     }
 
 }

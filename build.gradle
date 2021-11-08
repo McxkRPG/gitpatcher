@@ -48,17 +48,11 @@ publishing {
     }
     repositories {
         maven {
-            if (System.env.MAVEN_USER) {
-                url 'https://maven.minecraftforge.net/releases/'
-                authentication {
-                    basic(BasicAuthentication)
-                }
-                credentials {
-                    username = System.env.MAVEN_USER ?: 'not'
-                    password = System.env.MAVEN_PASSWORD ?: 'set'
-                }
-            } else {
-                url 'file://' + rootProject.file('repo').getAbsolutePath()
+            name = "IzzelAliz"
+            url = uri('https://maven.izzel.io/' + (project.version.toString().endsWith('SNAPSHOT') ? 'snapshots' : 'releases'))
+            credentials {
+                username = project.findProperty("mavenUser") ?: System.getenv("ARCLIGHT_USER")
+                password = project.findProperty("mavenToken") ?: System.getenv("ARCLIGHT_TOKEN")
             }
         }
     }
